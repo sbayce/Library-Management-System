@@ -1,9 +1,9 @@
 import express from 'express'
-import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 import bookRouter from './routes/book'
 import borrowerRouter from './routes/borrower'
 import borrowingRouter from './routes/borrowing'
+import analyticsRouter from './routes/analytics'
 
 declare global {
     namespace Express {
@@ -28,8 +28,9 @@ app.use((req, res, next) => {
 app.use('/book', bookRouter)
 app.use('/borrower', borrowerRouter)
 app.use('/borrowing', borrowingRouter)
+app.use('/analytics', analyticsRouter)
 app.get('/', (req, res) => {
-    res.send("testt.")
+    res.send("test.")
 })
 
 app.listen(PORT, () => {

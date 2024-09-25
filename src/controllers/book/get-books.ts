@@ -1,5 +1,25 @@
 import { Request, Response } from "express"
 
+/**
+ * @function getBooks
+ * @description Retrieves a paginated list of books from the database. Supports pagination through query parameters to handle large datasets efficiently.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.query.page`: The page number to retrieve (default is 1).
+ *   - `req.query.pageSize`: The number of books per page (default is 10).
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response with the list of books and pagination details, or
+ *   - An error message if a server error occurs.
+ * 
+ * @returns {void} Returns a JSON response with:
+ *   - `books`: The list of books for the current page.
+ *   - `pagination`: An object containing:
+ *     - `currentPage`: The current page number.
+ *     - `pageSize`: The number of books per page.
+ *     - `totalPages`: The total number of pages.
+ *     - `totalBooks`: The total number of books.
+ */
+
 const getBooks = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context

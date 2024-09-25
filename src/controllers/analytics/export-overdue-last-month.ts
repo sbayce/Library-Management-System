@@ -3,6 +3,22 @@ import * as path from "path"
 import * as fs from "fs"
 import { Parser } from "json2csv"
 
+/**
+ * @function exportOverdueLastMonth
+ * @description Generates a CSV report of all overdue borrowings from the previous month and sends it to the client for download.
+ *    The report includes details such as book title, borrower name, email, checkout date, and due date.
+ * 
+ * @param {Request} req - The Express request object. It includes:
+ *   - `req.context.prisma`: The Prisma client instance for database operations.
+ * @param {Response} res - The Express response object. Used to:
+ *   - Return a JSON response if there is an error or if no overdue borrowings are found.
+ *   - Send a CSV file for download if the report is successfully generated.
+ * 
+ * @returns {void} Returns:
+ *   - A JSON response with an error message if an internal error occurs or no overdue borrowings are found.
+ *   - A CSV file for download with the overdue borrowing report if successful.
+ */
+
 const exportOverdueLastMonth = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context

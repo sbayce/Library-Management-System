@@ -9,8 +9,8 @@ declare global {
     namespace Express {
       interface Request {
         context: {
-          prisma: PrismaClient;
-        };
+          prisma: PrismaClient
+        }
       }
     }
   }
@@ -22,9 +22,9 @@ app.use(express.json())
 app.use((req, res, next) => {
     req.context = {
       prisma: new PrismaClient(),
-    };
-    next();
-  });
+    }
+    next()
+  })
 app.use('/book', bookRouter)
 app.use('/borrower', borrowerRouter)
 app.use('/borrowing', borrowingRouter)

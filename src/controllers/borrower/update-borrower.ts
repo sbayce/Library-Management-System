@@ -1,6 +1,23 @@
 import { Request, Response } from "express"
 import { isValidEmail } from "../../services/validate-email"
 
+/**
+ * @function updateBorrower
+ * @description Handles updating borrower details. This includes validating input data, checking if the borrower exists, and updating the borrower's information if valid.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.params.borrowerId`: The ID of the borrower to update.
+ *   - `req.body.name` (optional): The new name for the borrower.
+ *   - `req.body.email` (optional): The new email for the borrower.
+ *   - `req.body.createdAt` (optional): The new creation date for the borrower.
+ *      Atleast one parameter should be provided.
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response with a success message and the updated borrower record, or
+ *   - An error message if validation fails, if no fields are provided to update, or if the borrower is not found.
+ * 
+ * @returns {void} Returns a JSON response with the result of the update operation and any relevant data.
+ */
+
 const updateBorrower = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
@@ -28,7 +45,7 @@ const updateBorrower = async (req: Request, res: Response) => {
             message: "No fields where provided to update."
         })
     }
-
+    // validate email if provided
     if(email && !isValidEmail(email)) {
         return res.status(400).json({
             error: "Bad Request",

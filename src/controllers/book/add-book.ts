@@ -1,5 +1,24 @@
 import { Request, Response } from "express"
 
+/**
+ * @function addBook
+ * @description Adds a new book to the database. Validates required fields and ensures no duplicate ISBNs before creating a new book entry.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.body.title`: The title of the book.
+ *   - `req.body.author`: The author of the book.
+ *   - `req.body.isbn`: The ISBN of the book.
+ *   - `req.body.availableQuantity`: The quantity of the book available.
+ *   - `req.body.shelfLocation`: The location of the book on the shelf.
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response indicating successful addition of the book or
+ *   - An error message if a server error occurs or the book cannot be added.
+ * 
+ * @returns {void} Returns a JSON response with:
+ *   - `message`: A success message confirming the addition of the book.
+ *   - `book`: The details of the newly added book, if successfully added.
+ */
+
 const addBook = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
@@ -29,13 +48,13 @@ const addBook = async (req: Request, res: Response) => {
       where: {
         isbn
       }
-    });
+    })
 
     if (existingBook) {
       return res.status(409).json({
         error: "Conflict",
         message: "A book with this ISBN already exists."
-      });
+      })
     }
 
     const newBook = await prisma.book.create({

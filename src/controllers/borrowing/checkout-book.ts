@@ -2,6 +2,22 @@ import { Request, Response } from "express"
 
 const REMAINING_DAYS = 14
 
+/**
+ * @function checkoutBook
+ * @description Handles the checkout process for a book. This includes validating the input data, checking the existence of the borrower and book,
+ *    ensuring the book is available, and creating a new borrowing record. The function also updates the book's available quantity and handles any potential errors.
+ *    The dueDate is 14 days from the checkout (Variable 'REMAINING_DAYS')
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.body.bookId`: The ID of the book to be checked out.
+ *   - `req.body.borrowerId`: The ID of the borrower who wants to check out the book.
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response with a success message, borrowing record, and updated book quantity, or
+ *   - An error message if validation fails or an internal server error occurs.
+ * 
+ * @returns {void} Returns a JSON response with the result of the checkout operation and any relevant data.
+ */
+
 const checkoutBook = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context

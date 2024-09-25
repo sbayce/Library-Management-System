@@ -1,5 +1,21 @@
 import { Request, Response } from "express"
 
+/**
+ * @function returnBook
+ * @description Handles the process of returning a borrowed book. This includes validating the input data,
+ *    checking the existence of the borrower and book, finding the active borrowing record,
+ *    updating the borrowing record with the return date, and updating the book's available quantity.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.body.bookId`: The ID of the book being returned.
+ *   - `req.body.email`: The email of the borrower returning the book.
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response with a success message, updated borrowing record, and updated book quantity, or
+ *   - An error message if validation fails or an internal server error occurs.
+ * 
+ * @returns {void} Returns a JSON response with the result of the return operation and any relevant data.
+ */
+
 const returnBook = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
@@ -35,13 +51,13 @@ const returnBook = async (req: Request, res: Response) => {
     // Find the book by ID
     const book = await prisma.book.findUnique({
       where: { id: parsedBookId },
-    });
+    })
 
     if (!book) {
       return res.status(404).json({
         error: "Not Found",
         message: "Book not found.",
-      });
+      })
     }
 
     // Find the borrowing record
@@ -51,13 +67,13 @@ const returnBook = async (req: Request, res: Response) => {
           borrowerId,
           returnedDate: null, // Ensure that the book has not been returned yet
         },
-      });
+      })
   
       if (!borrowing) {
         return res.status(404).json({
           error: "Not Found",
           message: "No active borrowing for this book and borrower, cannot return book.",
-        });
+        })
       }
     
     const returnedDate = new Date()
@@ -66,13 +82,13 @@ const returnBook = async (req: Request, res: Response) => {
      const updatedBorrowing = await prisma.borrowing.update({
         where: { id: borrowing.id },
         data: { returnedDate },
-      });
+      })
   
       // Update the book's available quantity
       const updatedBook = await prisma.book.update({
         where: { id: parsedBookId },
         data: { availableQuantity: book.availableQuantity + 1 },
-      });
+      })
 
     res.status(200).json({
         message: "Book returned successfully.",

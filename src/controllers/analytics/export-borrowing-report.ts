@@ -3,6 +3,23 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Parser } from 'json2csv'
 
+/**
+ * @function exportBorrowingReport
+ * @description Generates a CSV report of borrowings within a specified date range and sends it to the client for download.
+ *    The report includes details such as book title, borrower name, email, checkout date, due date, and returned date.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.query.startDate`: The start date for the report in ISO format.
+ *   - `req.query.endDate`: The end date for the report in ISO format.
+ * @param {Response} res - The Express response object. Used to:
+ *   - Return a JSON response if there is an error or if no borrowings are found.
+ *   - Send a CSV file for download if the report is successfully generated.
+ * 
+ * @returns {void} Returns:
+ *   - A JSON response with an error message if the request is invalid or if an internal error occurs.
+ *   - A CSV file for download with the borrowing report if successful.
+ */
+
 const exportBorrowingReport = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context

@@ -1,5 +1,20 @@
 import { Request, Response } from "express"
 
+/**
+ * @function deleteBook
+ * @description Deletes a book from the database by its ID. Ensures the book ID is valid and handles cases where the book to be deleted does not exist.
+ * 
+ * @param {Request} req - The Express request object. Contains:
+ *   - `req.params.bookId`: The ID of the book to be deleted.
+ * @param {Response} res - The Express response object. Used to return:
+ *   - A JSON response indicating successful deletion or
+ *   - An error message if a server error occurs or the book is not found.
+ * 
+ * @returns {void} Returns a JSON response with:
+ *   - `message`: A success message confirming the deletion of the book.
+ *   - `deletedBook`: The details of the deleted book, if successfully deleted.
+ */
+
 const deleteBook = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
@@ -37,7 +52,7 @@ const deleteBook = async (req: Request, res: Response) => {
       return res.status(404).json({
         error: "Not Found",
         message: "Book not found.",
-      });
+      })
     }
     console.log(`Error deleting book: ${error.message}`)
 

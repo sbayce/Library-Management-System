@@ -1,12 +1,11 @@
 import { Request, Response } from "express"
-import updateBorrowerQuery from "../../queries/borrower/update-borrower"
-import * as db from '../../database/index'
 import { isValidEmail } from "../../services/validate-email"
 
 const updateBorrower = async (req: Request, res: Response) => {
   try {
+    const { prisma } = req.context
     const { borrowerId } = req.params
-    const {name, email, registered_date} = req.body
+    const {name, email, createdAt} = req.body
 
     if(!borrowerId){
         return res.status(400).json({
@@ -23,7 +22,7 @@ const updateBorrower = async (req: Request, res: Response) => {
         })
     }
 
-    if(!name && !email && !registered_date ){
+    if(!name && !email && !createdAt ){
         return res.status(400).json({
             error: "Bad Request",
             message: "No fields where provided to update."
@@ -37,18 +36,31 @@ const updateBorrower = async (req: Request, res: Response) => {
         })
     }
     
-    const result = await db.query(updateBorrowerQuery, [name, email, registered_date, borrowerId])
-
-    if(result.rowCount === 0) {
+    // Check if the borrower exists
+    const existingBorrower = await prisma.borrower.findUnique({
+        where: { id },
+      })
+  
+      if (!existingBorrower) {
         return res.status(404).json({
-            error: "Not Found",
-            message: "Borrower not found."
+          error: "Not Found",
+          message: "Borrower not found.",
         })
-    }
+      }
+  
+      // Update borrower
+      const updatedBorrower = await prisma.borrower.update({
+        where: { id },
+        data: {
+          name: name ?? existingBorrower.name, // Use existing value if not provided
+          email: email ?? existingBorrower.email, // Use existing value if not provided
+          createdAt: createdAt ? new Date(createdAt) : existingBorrower.createdAt, // Parse date if provided
+        },
+      })
 
     res.status(200).json({
         message: "Borrower updated successfully.",
-        updatedBorrower: result.rows[0]
+        updatedBorrower
     })
 
   } catch (error: any) {

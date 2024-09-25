@@ -1,57 +1,83 @@
 import { Request, Response } from "express"
-import {returnBookQuery, getBorrowerQuery, getBorrowingQuery, getBookQuery} from "../../queries/borrowing/return-book"
-import updateBookQuantityQuery from "../../queries/borrowing/update-quantity"
-import * as db from '../../database/index'
 
 const returnBook = async (req: Request, res: Response) => {
   try {
-    const {book_id, email} = req.body
+    const { prisma } = req.context
+    const {bookId, email} = req.body
 
-    if(!book_id || !email){
+    if(!bookId || !email){
         return res.status(400).json({
             error: "Bad Request",
-            message: "book_id, and email are required."
+            message: "bookId and email are required."
         })
     }
+    const parsedBookId = parseInt(bookId, 10)
+    if (isNaN(parsedBookId)) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Invalid bookId.",
+      })
+    }
 
-    const borrowerResult = await db.query(getBorrowerQuery, [email])
-    if(borrowerResult.rowCount === 0) {
+    // Find the borrower by email
+    const borrower = await prisma.borrower.findUnique({
+        where: { email },
+      })
+  
+      if (!borrower) {
         return res.status(404).json({
-            error: "Not Found",
-            message: "Borrower not found."
+          error: "Not Found",
+          message: "Borrower not found.",
         })
+      }
+      const borrowerId = borrower.id
+
+    // Find the book by ID
+    const book = await prisma.book.findUnique({
+      where: { id: parsedBookId },
+    });
+
+    if (!book) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Book not found.",
+      });
     }
 
-    const bookResult = await db.query(getBookQuery, [book_id])
-    if(bookResult.rowCount === 0) {
+    // Find the borrowing record
+    const borrowing = await prisma.borrowing.findFirst({
+        where: {
+          bookId: parsedBookId,
+          borrowerId,
+          returnedDate: null, // Ensure that the book has not been returned yet
+        },
+      });
+  
+      if (!borrowing) {
         return res.status(404).json({
-            error: "Not Found",
-            message: "Book not found."
-        })
-    }
-
-    const borrower_id = borrowerResult.rows[0].id
-
-    const borrowingResult = await db.query(getBorrowingQuery, [book_id, borrower_id])
-
-    if(borrowingResult.rowCount === 0) {
-        return res.status(404).json({
-            error: "Not Found",
-            message: "No borrowing record found for this book and borrower, cannot return book."
-        })
-    }
+          error: "Not Found",
+          message: "No active borrowing for this book and borrower, cannot return book.",
+        });
+      }
     
-    const returned_date = new Date()
+    const returnedDate = new Date()
 
-    const borrowResult = await db.query(returnBookQuery, [returned_date, book_id, borrower_id])
-
-    const updatedQuantityResult = await db.query(updateBookQuantityQuery, [1, book_id])
-    const updatedQuantity = updatedQuantityResult.rows[0].available_quantity
+     // Update the borrowing record with the return date
+     const updatedBorrowing = await prisma.borrowing.update({
+        where: { id: borrowing.id },
+        data: { returnedDate },
+      });
+  
+      // Update the book's available quantity
+      const updatedBook = await prisma.book.update({
+        where: { id: parsedBookId },
+        data: { availableQuantity: book.availableQuantity + 1 },
+      });
 
     res.status(200).json({
         message: "Book returned successfully.",
-        borrowing: borrowResult.rows[0],
-        updatedQuantity
+        updatedBorrowing,
+        updatedQuantity: updatedBook.availableQuantity
     })
 
   } catch (error: any) {

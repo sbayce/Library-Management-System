@@ -1,14 +1,27 @@
 import { Request, Response } from "express"
-import searchBooksQuery from "../../queries/book/search-books"
-import * as db from '../../database/index'
 
 const searchBooks = async (req: Request, res: Response) => {
   try {
+    const { prisma } = req.context
     const {title, author, isbn} = req.query
 
-    const result = await db.query(searchBooksQuery, [title || null, author || null, isbn || null])
+    const titleFilter = typeof title === 'string' ? title : undefined
+    const authorFilter = typeof author === 'string' ? author : undefined
+    const isbnFilter = typeof isbn === 'string' ? isbn : undefined
 
-    res.status(200).json(result.rows)
+    const whereConditions: any = {
+      AND: [
+        titleFilter ? { title: { contains: titleFilter, mode: 'insensitive' } } : {},
+        authorFilter ? { author: { contains: authorFilter, mode: 'insensitive' } } : {},
+        isbnFilter ? { isbn: { contains: isbnFilter, mode: 'insensitive' } } : {}
+      ].filter(condition => Object.keys(condition).length > 0) // Remove empty objects
+    }
+
+    const books = await prisma.book.findMany({
+      where: whereConditions
+    });
+
+    res.status(200).json(books)
 
   } catch (error: any) {
 

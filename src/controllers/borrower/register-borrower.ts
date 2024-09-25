@@ -1,10 +1,9 @@
 import { Request, Response } from "express"
-import registerBorrowerQuery from "../../queries/borrower/register-borrower"
-import * as db from '../../database/index'
 import { isValidEmail } from "../../services/validate-email"
 
 const registerBorrower = async (req: Request, res: Response) => {
   try {
+    const { prisma } = req.context
     const { name, email } = req.body
     if(!name || !email ){
         return res.status(400).json({
@@ -20,11 +19,29 @@ const registerBorrower = async (req: Request, res: Response) => {
         })
     }
     
-    const result = await db.query(registerBorrowerQuery, [name, email, new Date()])
+    // Check if email already exists
+    const existingBorrower = await prisma.borrower.findUnique({
+      where: { email },
+    })
+
+    if (existingBorrower) {
+      return res.status(409).json({
+        error: "Conflict",
+        message: "A borrower with this email already exists.",
+      })
+    }
+
+    // Register new borrower
+    const newBorrower = await prisma.borrower.create({
+      data: {
+        name,
+        email
+      },
+    })
 
     res.status(201).json({
         message: "Borrower registered successfully.",
-        borrower: result.rows[0]
+        borrower: newBorrower
     })
 
   } catch (error: any) {

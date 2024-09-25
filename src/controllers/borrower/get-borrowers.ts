@@ -1,12 +1,11 @@
 import { Request, Response } from "express"
-import getBorrowersQuery from "../../queries/borrower/get-borrowers"
-import * as db from '../../database/index'
 
 const getBorrowers = async (req: Request, res: Response) => {
   try {
-    const result = await db.query(getBorrowersQuery)
+    const { prisma } = req.context
+    const borrowers = await prisma.borrower.findMany()
 
-    res.status(200).json(result.rows)
+    res.status(200).json(borrowers)
 
   } catch (error: any) {
 

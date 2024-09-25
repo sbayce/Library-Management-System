@@ -1,30 +1,52 @@
 import { Request, Response } from "express"
-import addBookQuery from "../../queries/book/add-book"
-import * as db from '../../database/index'
 
 const addBook = async (req: Request, res: Response) => {
   try {
-    const {title, author, isbn, available_quantity, shelf_location} = req.body
-    if(!title || !author || !isbn || available_quantity === undefined || !shelf_location){
+    const { prisma } = req.context
+    const {title, author, isbn, availableQuantity, shelfLocation} = req.body
+
+    if(!title || !author || !isbn || availableQuantity === undefined || !shelfLocation){
         return res.status(400).json({
             error: "Bad Request",
             message: "Title, author, ISBN, available quantity and shelf location are required."
         })
     }
-    const quantity = parseInt(available_quantity, 10)
-    if(isNaN(quantity) || quantity < 0){
-        console.log("quantity: ", quantity)
+    const quantity = parseInt(availableQuantity, 10)
+    if(isNaN(quantity)){
+      return res.status(400).json({
+          error: "Bad Request",
+          message: "Available quantity is invalid."
+      })
+    }
+    if(quantity < 0){
         return res.status(400).json({
             error: "Bad Request",
             message: "Available quantity should not be a negative value."
         })
     }
-    
-    const result = await db.query(addBookQuery, [title, author, isbn, quantity, shelf_location])
+
+    const existingBook = await prisma.book.findUnique({
+      where: {
+        isbn
+      }
+    });
+
+    if (existingBook) {
+      return res.status(409).json({
+        error: "Conflict",
+        message: "A book with this ISBN already exists."
+      });
+    }
+
+    const newBook = await prisma.book.create({
+      data: {
+        title, author, isbn, availableQuantity, shelfLocation
+      }
+    })
 
     res.status(201).json({
         message: "Book added successfully.",
-        book: result.rows[0]
+        book: newBook
     })
 
   } catch (error: any) {

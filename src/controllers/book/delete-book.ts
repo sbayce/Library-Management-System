@@ -1,9 +1,8 @@
 import { Request, Response } from "express"
-import deleteBookQuery from "../../queries/book/delete-book"
-import * as db from '../../database/index'
 
 const deleteBook = async (req: Request, res: Response) => {
   try {
+    const { prisma } = req.context
     const { bookId } = req.params
 
     if(!bookId){
@@ -21,21 +20,25 @@ const deleteBook = async (req: Request, res: Response) => {
         })
     }
 
-    const result = await db.query(deleteBookQuery, [bookId])
+    const deletedBook = await prisma.book.delete({
+      where: {
+        id
+      }
+    })
 
-    if(result.rowCount === 0){
-        return res.status(404).json({
-            error: "Not Found",
-            message: "Book not found."
-        })
-    }
     res.status(200).json({
         message: "Book deleted successfully.",
-        deletedBook: result.rows[0]
+        deletedBook
     })
 
   } catch (error: any) {
-
+    if (error.code === "P2025") {
+      // Error code for "Record to delete does not exist"
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Book not found.",
+      });
+    }
     console.log(`Error deleting book: ${error.message}`)
 
     res.status(500).json({

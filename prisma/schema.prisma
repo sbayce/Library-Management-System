@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id                Int         @id @default(autoincrement()) // Primary key
+  title             String
+  author            String
+  isbn              String      @unique
+  availableQuantity Int
+  shelfLocation     String
+  borrowings        Borrowing[] // One book can be borrowed multiple times
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Borrower {
+  id         Int         @id @default(autoincrement()) // Primary key
+  name       String
+  email      String      @unique
+  borrowings Borrowing[] // One borrower can borrow multiple books
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Borrowing {
+  id           Int       @id @default(autoincrement()) // Primary key
+  book         Book      @relation(fields: [bookId], references: [id])
+  bookId       Int
+  borrower     Borrower  @relation(fields: [borrowerId], references: [id])
+  borrowerId   Int
+  checkoutDate DateTime
+  dueDate      DateTime
+  returnedDate DateTime? // Optional, as the book may not have been returned yet
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookId, borrowerId]) // Compound index for quick lookup
+}

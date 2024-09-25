@@ -4,7 +4,6 @@ import bookRouter from './routes/book'
 import borrowerRouter from './routes/borrower'
 import borrowingRouter from './routes/borrowing'
 
-dotenv.config()
 const PORT = process.env.PORT || 4000
 const app = express()
 

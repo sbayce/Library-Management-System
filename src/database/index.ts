@@ -1,11 +1,13 @@
 import { Pool } from 'pg'
+import dotenv from 'dotenv'
 
+dotenv.config()
 const pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "Library-MS",
-    password: "Youssef$777",
-    port: 5432
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DB,
+    password: process.env.PG_PASSWORD,
+    port: Number(process.env.PG_PORT)
 })
 
 export const query = async (text: string, params?: any[]) => {

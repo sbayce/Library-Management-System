@@ -23,3 +23,22 @@
    
    ```bash
    npm start
+
+#File structure
+├── Prisma
+│   └── schema.prisma      # Prisma schema file
+├── src
+│   ├── controllers
+│   │   ├── analytics
+│   │   ├── book
+│   │   ├── borrower
+│   │   └── borrowing
+│   ├── routes
+│   │   ├── analytics.ts
+│   │   ├── book.ts
+│   │   ├── borrower.ts
+│   │   └── borrowing.ts
+│   ├── services
+│   │   └── validate-email.ts
+│   └── index.ts           # Main entry point
+

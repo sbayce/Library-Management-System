@@ -31,8 +31,8 @@
 │   └── schema.prisma      # Prisma schema file
 ├── src
 │   ├── controllers
-│   │   ├── analytics
-│   │   ├── book
+│   │   ├── analytics      # Endpoints for exporting .csv files
+│   │   ├── book 
 │   │   ├── borrower
 │   │   └── borrowing
 │   ├── routes

@@ -18,6 +18,10 @@ model Book {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([title])
+  @@index([author])
+  @@index([isbn])
 }
 
 model Borrower {
@@ -28,6 +32,8 @@ model Borrower {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
 model Borrowing {
@@ -43,5 +49,7 @@ model Borrowing {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([bookId, borrowerId]) // Compound index for quick lookup
+  @@index([bookId, borrowerId])
+  @@index([dueDate])
+  @@index([returnedDate])
 }

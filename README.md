@@ -13,11 +13,13 @@
    npm install
 
 3. **Create .env file and add the DATABASE_URL variable**
-4. **Generate Prisma Client**
+      ```bash
+      //example  postgres://YourUserName:YourPassword@localhost:5432/DB_name
+5. **Generate Prisma Client**
     
    ```bash
    npx prisma generate
-5. **Run server**
+6. **Run server**
    
    ```bash
    npm start

@@ -30,6 +30,20 @@ const checkoutBook = async (req: Request, res: Response) => {
         })
     }
 
+    if(isNaN(parseInt(bookId, 10))) {
+      return res.status(400).json({
+          error: "Bad Request",
+          message: "Invalid book ID."
+      })
+  }
+
+    if(isNaN(parseInt(borrowerId, 10))) {
+        return res.status(400).json({
+            error: "Bad Request",
+            message: "Invalid borrower ID."
+        })
+    }
+
     // Check if the borrower exists
     const borrower = await prisma.borrower.findUnique({
         where: { id: parseInt(borrowerId, 10) },
@@ -78,6 +92,7 @@ const checkoutBook = async (req: Request, res: Response) => {
         })
       }
     
+    // set the due date
     const checkoutDate = new Date()
     const dueDate = new Date()
     dueDate.setDate(checkoutDate.getDate() + REMAINING_DAYS)

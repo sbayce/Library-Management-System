@@ -19,7 +19,7 @@ import { Request, Response } from "express"
 const getUserBorrowings = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
-    const { borrowerId } = req.body
+    const { borrowerId } = req.params
 
     // Validate the borrower ID
     if (!borrowerId) {

@@ -68,7 +68,7 @@ const updateBook = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     if (error.code === 'P2025') {
-        // Book not found
+        // Error code for "Record to delete does not exist"
         return res.status(404).json({
           error: "Not Found",
           message: "Book not found.",

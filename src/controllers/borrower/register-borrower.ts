@@ -20,6 +20,7 @@ const registerBorrower = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
     const { name, email } = req.body
+    
     if(!name || !email ){
         return res.status(400).json({
             error: "Bad Request",

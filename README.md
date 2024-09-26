@@ -24,7 +24,9 @@
    ```bash
    npm start
 
-#File structure
+# File structure
+
+   ```bash
 ├── Prisma
 │   └── schema.prisma      # Prisma schema file
 ├── src

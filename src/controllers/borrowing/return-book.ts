@@ -8,7 +8,7 @@ import { Request, Response } from "express"
  * 
  * @param {Request} req - The Express request object. Contains:
  *   - `req.body.bookId`: The ID of the book being returned.
- *   - `req.body.email`: The email of the borrower returning the book.
+ *   - `req.body.borrowerId`: The id of the borrower returning the book.
  * @param {Response} res - The Express response object. Used to return:
  *   - A JSON response with a success message, updated borrowing record, and updated book quantity, or
  *   - An error message if validation fails or an internal server error occurs.
@@ -19,12 +19,12 @@ import { Request, Response } from "express"
 const returnBook = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
-    const {bookId, email} = req.body
+    const {bookId, borrowerId} = req.body
 
-    if(!bookId || !email){
+    if(!bookId || !borrowerId){
         return res.status(400).json({
             error: "Bad Request",
-            message: "bookId and email are required."
+            message: "bookId and borrowerId are required."
         })
     }
     const parsedBookId = parseInt(bookId, 10)
@@ -35,9 +35,17 @@ const returnBook = async (req: Request, res: Response) => {
       })
     }
 
-    // Find the borrower by email
+    const parsedBorrowerId = parseInt(borrowerId, 10)
+    if (isNaN(parsedBorrowerId)) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Invalid borrowerId.",
+      })
+    }
+
+    // Check if borrower exists
     const borrower = await prisma.borrower.findUnique({
-        where: { email },
+        where: { id: parsedBorrowerId },
       })
   
       if (!borrower) {
@@ -46,7 +54,6 @@ const returnBook = async (req: Request, res: Response) => {
           message: "Borrower not found.",
         })
       }
-      const borrowerId = borrower.id
 
     // Find the book by ID
     const book = await prisma.book.findUnique({
@@ -64,7 +71,7 @@ const returnBook = async (req: Request, res: Response) => {
     const borrowing = await prisma.borrowing.findFirst({
         where: {
           bookId: parsedBookId,
-          borrowerId,
+          borrowerId: parsedBorrowerId,
           returnedDate: null, // Ensure that the book has not been returned yet
         },
       })

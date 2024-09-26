@@ -19,7 +19,7 @@ import { Request, Response } from "express"
 const getUserBorrowings = async (req: Request, res: Response) => {
   try {
     const { prisma } = req.context
-    const { borrowerId } = req.params
+    const { borrowerId } = req.body
 
     // Validate the borrower ID
     if (!borrowerId) {
@@ -34,6 +34,18 @@ const getUserBorrowings = async (req: Request, res: Response) => {
       return res.status(400).json({
         error: "Bad Request",
         message: "Invalid borrower ID.",
+      })
+    }
+
+    // Check if borrower exists
+    const borrower = await prisma.borrower.findUnique({
+      where: { id: parsedId },
+    })
+
+    if (!borrower) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Borrower not found.",
       })
     }
 

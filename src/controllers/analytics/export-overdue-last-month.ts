@@ -53,7 +53,7 @@ export const exportOverdueLastMonth = async (_req: Request, res: Response) => {
     "Due Date": borrowing.dueDate.toISOString().split("T")[0],
   }))
 
-  // generate CSV using json-2-csv
+  // generate CSV
   const csv = json2csv(csvData, {
     delimiter: { field: "," },
   })

@@ -13,6 +13,7 @@ import { BadRequestError } from "../../errors"
 export const registerBorrower = async (req: Request, res: Response) => {
   const { email, name } = req.body
 
+  // Check if borrower's email already exists
   const existingBorrower = await prisma.borrower.findUnique({
     where: {
       email,

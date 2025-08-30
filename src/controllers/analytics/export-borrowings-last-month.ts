@@ -54,7 +54,7 @@ export const exportBorrowingLastMonth = async (
       : "Not Returned",
   }))
 
-  // generate CSV using json-2-csv
+  // generate CSV
   const csv = json2csv(csvData, {
     delimiter: { field: "," },
   })

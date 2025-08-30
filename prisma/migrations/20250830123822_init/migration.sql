@@ -65,7 +65,7 @@ CREATE INDEX "Borrowing_dueDate_idx" ON "public"."Borrowing"("dueDate");
 CREATE INDEX "Borrowing_returnedDate_idx" ON "public"."Borrowing"("returnedDate");
 
 -- AddForeignKey
-ALTER TABLE "public"."Borrowing" ADD CONSTRAINT "Borrowing_bookId_fkey" FOREIGN KEY ("bookId") REFERENCES "public"."Book"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Borrowing" ADD CONSTRAINT "Borrowing_bookId_fkey" FOREIGN KEY ("bookId") REFERENCES "public"."Book"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Borrowing" ADD CONSTRAINT "Borrowing_borrowerId_fkey" FOREIGN KEY ("borrowerId") REFERENCES "public"."Borrower"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Borrowing" ADD CONSTRAINT "Borrowing_borrowerId_fkey" FOREIGN KEY ("borrowerId") REFERENCES "public"."Borrower"("id") ON DELETE CASCADE ON UPDATE CASCADE;

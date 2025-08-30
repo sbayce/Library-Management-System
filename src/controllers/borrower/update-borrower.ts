@@ -17,6 +17,7 @@ export const updateBorrower = async (req: Request, res: Response) => {
   const { email, name } = req.body
   const borrowerId = Number(req.params.borrowerId)
 
+  // Check if borrower exists
   const existingBorrower = await prisma.borrower.findUnique({
     where: {
       id: borrowerId,
@@ -27,6 +28,7 @@ export const updateBorrower = async (req: Request, res: Response) => {
     throw new NotFoundError("Borrower with the specified ID doesn't exist")
   }
 
+  // Check if borrower's email already exists
   const existingEmail = await prisma.borrower.findUnique({
     where: {
       email,

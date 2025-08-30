@@ -16,9 +16,6 @@ import fs from "fs"
 export const exportBorrowingReport = async (req: Request, res: Response) => {
   const { startDate, endDate } = req.query
 
-  console.log("start: ", startDate)
-  console.log("end: ", endDate)
-
   const borrowings = await prisma.borrowing.findMany({
     where: {
       checkoutDate: {
@@ -47,7 +44,7 @@ export const exportBorrowingReport = async (req: Request, res: Response) => {
       : "Not Returned",
   }))
 
-  // generate CSV using json-2-csv
+  // generate CSV
   const csv = json2csv(csvData, {
     delimiter: { field: "," },
   })

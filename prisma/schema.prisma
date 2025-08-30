@@ -38,9 +38,9 @@ model Borrower {
 
 model Borrowing {
   id           Int       @id @default(autoincrement())
-  book         Book      @relation(fields: [bookId], references: [id])
+  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookId       Int
-  borrower     Borrower  @relation(fields: [borrowerId], references: [id])
+  borrower     Borrower  @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
   borrowerId   Int
   checkoutDate DateTime
   dueDate      DateTime

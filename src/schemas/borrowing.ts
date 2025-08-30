@@ -13,3 +13,8 @@ export const checkoutBookSchema = z.object({
       message: "Due date cannot be in the past",
     }),
 })
+
+export const returnBookSchema = z.object({
+  bookId: z.number().int().positive(),
+  borrowerId: z.number().int().positive(),
+})

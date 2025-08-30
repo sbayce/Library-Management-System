@@ -13,6 +13,7 @@ import { NotFoundError } from "../../errors"
 export const deleteBorrower = async (req: Request, res: Response) => {
   const borrowerId = Number(req.params.borrowerId)
 
+  // Check if borrower exists
   const existingBorrower = await prisma.borrower.findUnique({
     where: {
       id: borrowerId,

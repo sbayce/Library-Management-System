@@ -16,6 +16,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
 
   // Begin a transaction
   const borrowing = await prisma.$transaction(async (tx) => {
+    // Check if book exists
     const existingBook = await tx.book.findUnique({
       where: {
         id: bookId,
@@ -29,6 +30,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
       throw new NotFoundError("Book specified doesn't exist")
     }
 
+    // Check if borrower exists
     const existingBorrower = await tx.borrower.findUnique({
       where: {
         id: borrowerId,
@@ -39,6 +41,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
       throw new NotFoundError("Borrower specified doesn't exist")
     }
 
+    // Check if book is already borrowed by this borrower
     const existingBorrowing = await tx.borrowing.findFirst({
       where: {
         bookId,
@@ -51,6 +54,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
       throw new BadRequestError("This borrower already borrowed this book")
     }
 
+    // Check if book's available quantity
     if (existingBook.availableQuantity <= 0) {
       throw new BadRequestError("Book has no available copies")
     }
@@ -64,6 +68,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
       },
     })
 
+    // Decrement book's available quantity
     await tx.book.update({
       where: {
         id: bookId,

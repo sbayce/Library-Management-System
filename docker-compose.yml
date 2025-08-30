@@ -11,8 +11,6 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
 
   app:
     build: .
@@ -26,6 +24,3 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
       PORT: 4000
     command: sh -c "npx prisma migrate deploy && node dist/index.js"
-
-volumes:
-  db_data:
